@@ -39,6 +39,7 @@ startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
+
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Call the Configure method

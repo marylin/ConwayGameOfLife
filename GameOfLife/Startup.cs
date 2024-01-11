@@ -28,7 +28,7 @@ namespace GameOfLife
             services.AddScoped<BoardRepository>();
             services.AddScoped<GameService>();
 
-            // Add other services here
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -42,7 +42,7 @@ namespace GameOfLife
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
-            // Add any additional middleware here
+            
         }
     }
 }

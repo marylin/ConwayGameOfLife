@@ -10,25 +10,25 @@ namespace GameOfLife.Services
 {
     public class GameService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly BoardRepository _boardRepository;
 
-        public GameService(ApplicationDbContext context)
+        public GameService(BoardRepository boardRepository)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            
+            _boardRepository = boardRepository ?? throw new ArgumentNullException(nameof(boardRepository));
         }
 
         public async Task<int> CreateNewBoardAsync(bool[,] initialState)
         {
             var board = new Board(initialState);
-            _context.Boards.Add(board);
-            await _context.SaveChangesAsync();
+            await _boardRepository.AddBoardAsync(board);
 
             return board.Id;
         }
 
         public async Task<bool[,]> GetNextStateAsync(int boardId)
         {
-            var board = await _context.Boards.FindAsync(boardId);
+            var board = await _boardRepository.GetBoardAsync(boardId);
             if (board == null)
                 throw new KeyNotFoundException($"Board with ID {boardId} does not exist.");
 
@@ -36,15 +36,14 @@ namespace GameOfLife.Services
             var nextState = CalculateNextState(currentState);
             board.State = nextState;
 
-            _context.Boards.Update(board);
-            await _context.SaveChangesAsync();
+            await _boardRepository.UpdateBoardAsync(board);
 
             return nextState;
         }
 
         public async Task<List<bool[,]>> GetFutureStatesAsync(int boardId, int numberOfSteps)
         {
-            var board = await _context.Boards.FindAsync(boardId);
+            var board = await _boardRepository.GetBoardAsync(boardId);
             if (board == null)
                 throw new KeyNotFoundException($"Board with ID {boardId} does not exist.");
 
@@ -57,15 +56,15 @@ namespace GameOfLife.Services
             }
 
             board.State = currentState;
-            _context.Boards.Update(board);
-            await _context.SaveChangesAsync();
+            await _boardRepository.UpdateBoardAsync(board);
 
             return futureStates;
         }
 
+
         public async Task<bool[,]> FindFinalStateOrErrorAsync(int boardId, int maxIterations)
         {
-            var board = await _context.Boards.FindAsync(boardId);
+            var board = await _boardRepository.GetBoardAsync(boardId);
             if (board == null)
                 throw new KeyNotFoundException($"Board with ID {boardId} does not exist.");
 
@@ -76,6 +75,8 @@ namespace GameOfLife.Services
                 var nextState = CalculateNextState(currentState);
                 if (AreStatesEqual(currentState, nextState))
                 {
+                    board.State = nextState;
+                    await _boardRepository.UpdateBoardAsync(board);
                     return nextState;
                 }
                 currentState = nextState;
@@ -84,6 +85,7 @@ namespace GameOfLife.Services
 
             throw new InvalidOperationException("Final state not found within the specified iterations.");
         }
+
 
         //Applies Conway's Game of Life rules to compute the next state.
         private bool[,] CalculateNextState(bool[,] currentState)

@@ -26,6 +26,31 @@ namespace GameOfLife.Infrastructure
             await _context.SaveChangesAsync();
         }
 
-        // Add other methods for updating, deleting, etc.
+        public async Task UpdateBoardAsync(Board board)
+        {
+            if (board == null)
+                throw new ArgumentNullException(nameof(board));
+
+            _context.Boards.Update(board);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteBoardAsync(int id)
+        {
+            var board = await _context.Boards.FindAsync(id);
+            if (board != null)
+            {
+                _context.Boards.Remove(board);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Board>> GetAllBoardsAsync()
+        {
+            return await _context.Boards.ToListAsync();
+        }
+
+
+
     }
 }
