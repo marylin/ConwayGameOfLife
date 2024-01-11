@@ -24,7 +24,7 @@ This ASP.NET Core Web API provides a backend for Conway's Game of Life. It allow
 
 1. Clone the repository:
    ```bash
-   git clone https://your-repository-url
+   git clone https://github.com/marylin/ConwayGameOfLife.git
 
 ### Installation
 
@@ -37,13 +37,6 @@ This ASP.NET Core Web API provides a backend for Conway's Game of Life. It allow
    ```bash
    dotnet ef database update
   
-
-### Running the Application
-Run the application in Visual Studio or use the following command:
-
-     dotnet run --project path/to/your/solutionfolder/GameOfLife
-
-The API will be available at http://localhost:5000/.
 
 ## Usage
 
